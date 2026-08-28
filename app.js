@@ -10,11 +10,44 @@ const message = document.querySelector('#message');
 const resultSection = document.querySelector('#result-section');
 const hashOutput = document.querySelector('#hash-output');
 const copyButton = document.querySelector('#copy');
+const themeButtons = document.querySelectorAll('[data-theme-option]');
+const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
 function setMessage(text, isError = false) {
   message.textContent = text;
   message.classList.toggle('error', isError);
 }
+
+function resolveTheme(preference) {
+  return preference === 'system' ? (themeMediaQuery.matches ? 'dark' : 'light') : preference;
+}
+
+function applyTheme(preference, persist = false) {
+  const theme = resolveTheme(preference);
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.dataset.themePreference = preference;
+
+  themeButtons.forEach((button) => {
+    button.setAttribute('aria-pressed', String(button.dataset.themeOption === preference));
+  });
+
+  if (persist) {
+    localStorage.setItem('theme-preference', preference);
+  }
+}
+
+const savedThemePreference = localStorage.getItem('theme-preference') || 'system';
+applyTheme(savedThemePreference);
+
+themeButtons.forEach((button) => {
+  button.addEventListener('click', () => applyTheme(button.dataset.themeOption, true));
+});
+
+themeMediaQuery.addEventListener('change', () => {
+  if ((localStorage.getItem('theme-preference') || 'system') === 'system') {
+    applyTheme('system');
+  }
+});
 
 togglePasswordButton.addEventListener('click', () => {
   const showing = passwordInput.type === 'text';

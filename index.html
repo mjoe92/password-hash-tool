@@ -7,13 +7,31 @@
       name="description"
       content="A browser-only Argon2id password hash generator. Passwords never leave your device."
     />
+    <script>
+      (() => {
+        const preference = localStorage.getItem('theme-preference') || 'system';
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = preference === 'system' ? (isDark ? 'dark' : 'light') : preference;
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.themePreference = preference;
+      })();
+    </script>
     <title>Argon2id Password Hash Tool</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="shell">
       <section class="card" aria-labelledby="page-title">
-        <p class="eyebrow">Local-only utility</p>
+        <div class="utility-row">
+          <p class="eyebrow">Local-only utility</p>
+          <fieldset class="theme-switcher" aria-label="Color theme">
+            <legend class="sr-only">Color theme</legend>
+            <button type="button" class="theme-option" data-theme-option="system" aria-pressed="true">System</button>
+            <button type="button" class="theme-option" data-theme-option="light" aria-pressed="false">Light</button>
+            <button type="button" class="theme-option" data-theme-option="dark" aria-pressed="false">Dark</button>
+          </fieldset>
+        </div>
+
         <h1 id="page-title">Argon2id Password Hash Tool</h1>
         <p class="intro">
           Generate a password hash for applications using Argon2id. Your password is

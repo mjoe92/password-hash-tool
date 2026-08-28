@@ -8,6 +8,10 @@ A privacy-first static password hash generator for applications that use Argon2i
 - The page has no form submission, analytics, database, password storage, or application backend.
 - The Argon2 implementation is loaded from a pinned CDN package. Review or self-host its assets if you need an offline or higher-assurance setup.
 
+## Themes
+
+The color theme defaults to **System**, which follows the visitor's operating-system preference and updates if that preference changes while the page is open. Visitors can explicitly choose Light or Dark instead. This non-sensitive display preference is saved only in the browser's `localStorage` under `theme-preference`.
+
 ## Output compatibility
 
 The generated output is a standard PHC-formatted Argon2id hash such as:
