@@ -12,6 +12,7 @@ const hashOutput = document.querySelector('#hash-output');
 const copyButton = document.querySelector('#copy');
 const themeToggle = document.querySelector('#theme-toggle');
 const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+const argon2Script = document.querySelector('#argon2-cdn');
 
 function setMessage(text, isError = false) {
   message.textContent = text;
@@ -26,28 +27,21 @@ function applyTheme(preference, persist = false) {
   const theme = resolveTheme(preference);
   document.documentElement.dataset.theme = theme;
   document.documentElement.dataset.themePreference = preference;
-
   const isDark = theme === 'dark';
   themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
   themeToggle.setAttribute('title', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-
-  if (persist) {
-    localStorage.setItem('theme-preference', preference);
-  }
+  if (persist) localStorage.setItem('theme-preference', preference);
 }
 
 const savedThemePreference = localStorage.getItem('theme-preference') || 'system';
 applyTheme(savedThemePreference);
 
 themeToggle.addEventListener('click', () => {
-  const currentTheme = document.documentElement.dataset.theme;
-  applyTheme(currentTheme === 'dark' ? 'light' : 'dark', true);
+  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true);
 });
 
 themeMediaQuery.addEventListener('change', () => {
-  if ((localStorage.getItem('theme-preference') || 'system') === 'system') {
-    applyTheme('system');
-  }
+  if ((localStorage.getItem('theme-preference') || 'system') === 'system') applyTheme('system');
 });
 
 togglePasswordButton.addEventListener('click', () => {
@@ -56,6 +50,25 @@ togglePasswordButton.addEventListener('click', () => {
   togglePasswordButton.textContent = showing ? 'Show' : 'Hide';
   togglePasswordButton.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
 });
+
+function markArgon2Ready() {
+  if (!window.argon2) return false;
+  generateButton.disabled = false;
+  setMessage('Ready. Hashing runs locally in your browser.');
+  return true;
+}
+
+function markArgon2Failed() {
+  generateButton.disabled = true;
+  setMessage('The Argon2 library could not load. Check your connection, disable blocking extensions, and reload.', true);
+}
+
+if (!markArgon2Ready()) {
+  argon2Script.addEventListener('load', () => {
+    if (!markArgon2Ready()) markArgon2Failed();
+  }, { once: true });
+  argon2Script.addEventListener('error', markArgon2Failed, { once: true });
+}
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -72,14 +85,12 @@ form.addEventListener('submit', async (event) => {
     setMessage('Use a password with at least 12 characters.', true);
     return;
   }
-
   if (password !== confirmation) {
     setMessage('The passwords do not match.', true);
     return;
   }
-
   if (!window.argon2) {
-    setMessage('The Argon2 library did not load. Check your internet connection and reload.', true);
+    markArgon2Failed();
     return;
   }
 
@@ -97,7 +108,6 @@ form.addEventListener('submit', async (event) => {
       hashLen: 32,
       type: window.argon2.ArgonType.Argon2id,
     });
-
     hashOutput.value = result.encoded;
     resultSection.hidden = false;
     setMessage('Hash generated. Copy the complete value into password_hash.');
@@ -116,9 +126,7 @@ copyButton.addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(hashOutput.value);
     copyButton.textContent = 'Copied';
-    window.setTimeout(() => {
-      copyButton.textContent = 'Copy';
-    }, 1800);
+    window.setTimeout(() => { copyButton.textContent = 'Copy'; }, 1800);
   } catch {
     hashOutput.focus();
     hashOutput.select();
