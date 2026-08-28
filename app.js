@@ -10,7 +10,7 @@ const message = document.querySelector('#message');
 const resultSection = document.querySelector('#result-section');
 const hashOutput = document.querySelector('#hash-output');
 const copyButton = document.querySelector('#copy');
-const themeButtons = document.querySelectorAll('[data-theme-option]');
+const themeToggle = document.querySelector('#theme-toggle');
 const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
 function setMessage(text, isError = false) {
@@ -27,9 +27,9 @@ function applyTheme(preference, persist = false) {
   document.documentElement.dataset.theme = theme;
   document.documentElement.dataset.themePreference = preference;
 
-  themeButtons.forEach((button) => {
-    button.setAttribute('aria-pressed', String(button.dataset.themeOption === preference));
-  });
+  const isDark = theme === 'dark';
+  themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+  themeToggle.setAttribute('title', isDark ? 'Switch to light mode' : 'Switch to dark mode');
 
   if (persist) {
     localStorage.setItem('theme-preference', preference);
@@ -39,8 +39,9 @@ function applyTheme(preference, persist = false) {
 const savedThemePreference = localStorage.getItem('theme-preference') || 'system';
 applyTheme(savedThemePreference);
 
-themeButtons.forEach((button) => {
-  button.addEventListener('click', () => applyTheme(button.dataset.themeOption, true));
+themeToggle.addEventListener('click', () => {
+  const currentTheme = document.documentElement.dataset.theme;
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark', true);
 });
 
 themeMediaQuery.addEventListener('change', () => {
