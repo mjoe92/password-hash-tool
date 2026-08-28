@@ -1,6 +1,5 @@
 const form = document.querySelector('#hash-form');
 const passwordInput = document.querySelector('#password');
-const confirmPasswordInput = document.querySelector('#confirm-password');
 const memoryInput = document.querySelector('#memory');
 const iterationsInput = document.querySelector('#iterations');
 const parallelismInput = document.querySelector('#parallelism');
@@ -33,13 +32,8 @@ function applyTheme(preference, persist = false) {
   if (persist) localStorage.setItem('theme-preference', preference);
 }
 
-const savedThemePreference = localStorage.getItem('theme-preference') || 'system';
-applyTheme(savedThemePreference);
-
-themeToggle.addEventListener('click', () => {
-  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true);
-});
-
+applyTheme(localStorage.getItem('theme-preference') || 'system');
+themeToggle.addEventListener('click', () => applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true));
 themeMediaQuery.addEventListener('change', () => {
   if ((localStorage.getItem('theme-preference') || 'system') === 'system') applyTheme('system');
 });
@@ -76,17 +70,12 @@ form.addEventListener('submit', async (event) => {
   hashOutput.value = '';
 
   const password = passwordInput.value;
-  const confirmation = confirmPasswordInput.value;
   const memory = Number(memoryInput.value);
   const iterations = Number(iterationsInput.value);
   const parallelism = Number(parallelismInput.value);
 
   if (password.length < 12) {
     setMessage('Use a password with at least 12 characters.', true);
-    return;
-  }
-  if (password !== confirmation) {
-    setMessage('The passwords do not match.', true);
     return;
   }
   if (!window.argon2) {
@@ -110,13 +99,12 @@ form.addEventListener('submit', async (event) => {
     });
     hashOutput.value = result.encoded;
     resultSection.hidden = false;
-    setMessage('Hash generated. Copy the complete value into password_hash.');
+    setMessage('Hash generated.');
   } catch (error) {
     console.error('Argon2 hashing failed', error);
     setMessage('Hash generation failed. Try lower memory or reload the page.', true);
   } finally {
     passwordInput.value = '';
-    confirmPasswordInput.value = '';
     generateButton.disabled = false;
     generateButton.textContent = 'Generate Argon2id hash';
   }

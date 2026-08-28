@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="A browser-only Argon2id password hash generator. Passwords never leave your device."
-    />
+    <meta name="description" content="A browser-only Argon2id password hash generator. Passwords never leave your device." />
     <script>
       (() => {
         const preference = localStorage.getItem('theme-preference') || 'system';
@@ -24,13 +21,7 @@
         <div class="utility-row">
           <p class="eyebrow">Local-only utility</p>
           <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
-            <svg class="theme-icon sun-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <circle cx="12" cy="12" r="4"></circle>
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
-            </svg>
-            <svg class="theme-icon moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M20.6 15.7A8.5 8.5 0 0 1 8.3 3.4 8.5 8.5 0 1 0 20.6 15.7Z"></path>
-            </svg>
+            <span class="theme-glyph" aria-hidden="true"></span>
           </button>
         </div>
 
@@ -43,9 +34,6 @@
             <input id="password" name="password" type="password" autocomplete="new-password" required />
             <button class="secondary small" id="toggle-password" type="button" aria-label="Show password">Show</button>
           </div>
-
-          <label for="confirm-password">Confirm password</label>
-          <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required />
 
           <fieldset>
             <legend>Argon2id parameters</legend>
@@ -63,7 +51,6 @@
         <section id="result-section" class="result" hidden aria-labelledby="result-title">
           <div class="result-header"><h2 id="result-title">Password hash</h2><button id="copy" class="secondary small" type="button">Copy</button></div>
           <textarea id="hash-output" rows="5" readonly aria-label="Generated Argon2id password hash"></textarea>
-          <p class="hint">Store this complete value in your database's <code>password_hash</code> field. Keep the original password private.</p>
         </section>
 
         <details>
