@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A browser-only Argon2id password hash generator. Passwords never leave your device."
+    />
+    <title>Argon2id Password Hash Tool</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card" aria-labelledby="page-title">
+        <p class="eyebrow">Local-only utility</p>
+        <h1 id="page-title">Argon2id Password Hash Tool</h1>
+        <p class="intro">
+          Generate a password hash for applications using Argon2id. Your password is
+          processed in this browser and is never sent to a server or saved by this page.
+        </p>
+
+        <form id="hash-form" novalidate>
+          <label for="password">Password</label>
+          <div class="password-row">
+            <input id="password" name="password" type="password" autocomplete="new-password" required />
+            <button class="secondary small" id="toggle-password" type="button" aria-label="Show password">Show</button>
+          </div>
+
+          <label for="confirm-password">Confirm password</label>
+          <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required />
+
+          <fieldset>
+            <legend>Argon2id parameters</legend>
+            <div class="parameter-grid">
+              <label for="memory">Memory (KiB)
+                <input id="memory" name="memory" type="number" min="8192" step="1024" value="19456" required />
+              </label>
+              <label for="iterations">Iterations
+                <input id="iterations" name="iterations" type="number" min="1" max="10" value="2" required />
+              </label>
+              <label for="parallelism">Parallelism
+                <input id="parallelism" name="parallelism" type="number" min="1" max="8" value="1" required />
+              </label>
+            </div>
+          </fieldset>
+
+          <p id="message" class="message" role="status" aria-live="polite"></p>
+
+          <button id="generate" class="primary" type="submit">Generate Argon2id hash</button>
+        </form>
+
+        <section id="result-section" class="result" hidden aria-labelledby="result-title">
+          <div class="result-header">
+            <h2 id="result-title">Password hash</h2>
+            <button id="copy" class="secondary small" type="button">Copy</button>
+          </div>
+          <textarea id="hash-output" rows="5" readonly aria-label="Generated Argon2id password hash"></textarea>
+          <p class="hint">Store this complete value in your database's <code>password_hash</code> field. Keep the original password private.</p>
+        </section>
+
+        <details>
+          <summary>Compatibility and privacy</summary>
+          <p>
+            The output uses the standard PHC string format beginning with <code>$argon2id$</code>,
+            compatible with Rust's <code>argon2</code> crate when using its default Argon2id verifier.
+            This page makes no API requests; the Argon2 WebAssembly library runs entirely in your browser.
+          </p>
+        </details>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/argon2-browser@1.18.0/dist/argon2-bundled.min.js" integrity="sha384-Q0W9wDV0NtxbJ9JvfA0soNtxE0oX8c3uR4BznsQr7G2HIpzYEpWxSkHl/ATPEGLI" crossorigin="anonymous"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
