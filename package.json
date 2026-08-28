@@ -1,0 +1,15 @@
+{
+  "name": "password-hash-tool",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-only password hash, verification, and text encryption tool. package.json exists only for the Node test suite - the app itself is static with no dependencies.",
+  "scripts": {
+    "test": "node test/node-test.js"
+  },
+  "devDependencies": {
+    "argon2": "^0.45.1",
+    "bcryptjs": "2.4.3",
+    "blakejs": "1.2.1",
+    "scrypt-js": "3.0.1"
+  }
+}

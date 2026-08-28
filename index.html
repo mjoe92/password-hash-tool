@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A browser-only password hash, verification, and text encryption tool. Passwords never leave your device." />
+    <script>
+      (() => {
+        const preference = localStorage.getItem('theme-preference') || 'system';
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.dataset.theme = preference === 'system' ? (isDark ? 'dark' : 'light') : preference;
+        document.documentElement.dataset.themePreference = preference;
+      })();
+    </script>
+    <title>Password Hash Tool</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%239d3342'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='40' font-weight='700' text-anchor='middle' fill='%23fffdfb'%3E%23%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card" aria-labelledby="page-title">
+        <div class="utility-row">
+          <p class="eyebrow">Local-only utility</p>
+          <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+            <span class="theme-glyph" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <h1 id="page-title">Password Hash Tool</h1>
+        <p class="intro">Hash and verify passwords, encrypt text, and compute HMACs — all in this browser. Nothing is sent to a server or saved by this page.</p>
+
+        <form id="tool-form" novalidate>
+          <label for="operation">Operation</label>
+          <select id="operation" name="operation"></select>
+          <p class="algorithm-note" id="operation-note"></p>
+
+          <fieldset id="parameters" hidden>
+            <legend id="parameters-legend">Parameters</legend>
+            <div class="parameter-grid" id="parameter-grid"></div>
+          </fieldset>
+
+          <div id="field-password" hidden>
+            <label for="password" id="password-label">Password</label>
+            <div class="password-row">
+              <input id="password" name="password" type="password" autocomplete="new-password" required />
+              <button class="secondary small" id="toggle-password" type="button" aria-label="Show password">Show</button>
+            </div>
+          </div>
+
+          <div id="field-secret" hidden>
+            <label for="hmac-secret">Secret key</label>
+            <input id="hmac-secret" type="password" autocomplete="off" required />
+          </div>
+
+          <div id="field-text" hidden>
+            <label for="text-input" id="text-label">Text</label>
+            <textarea id="text-input" rows="5" required></textarea>
+          </div>
+
+          <p id="message" class="message" role="status" aria-live="polite">Ready.</p>
+          <button id="action" class="primary" type="submit">Generate hash</button>
+        </form>
+
+        <section id="result-section" class="result" hidden aria-labelledby="result-title">
+          <div class="result-header"><h2 id="result-title">Result</h2><button id="copy" class="secondary small" type="button">Copy</button></div>
+          <textarea id="output" rows="5" readonly aria-label="Result"></textarea>
+        </section>
+
+        <section id="verify-section" aria-labelledby="verify-title">
+          <h2 id="verify-title">Verify a password</h2>
+          <p class="section-note">Paste a hash and enter the password to check. The algorithm is detected automatically from the hash string.</p>
+
+          <form id="verify-form" novalidate>
+            <label for="verify-hash">Password hash</label>
+            <textarea id="verify-hash" rows="4" placeholder="$argon2id$v=19$…" aria-label="Password hash to verify"></textarea>
+            <p class="algorithm-note" id="verify-detected" aria-live="polite"></p>
+
+            <label for="verify-password">Password to check</label>
+            <input id="verify-password" type="password" autocomplete="off" required />
+
+            <p id="verify-message" class="message" role="status" aria-live="polite"></p>
+            <button id="verify" class="primary" type="submit">Verify password</button>
+          </form>
+
+          <p id="verify-result" class="verify-outcome" role="status" aria-live="polite" hidden></p>
+        </section>
+
+        <details>
+          <summary>Compatibility and privacy</summary>
+          <p>Argon2 outputs are standard PHC strings, compatible with Rust's <code>argon2</code> crate. bcrypt (<code>$2a$…</code>) and PBKDF2 (passlib-style <code>$pbkdf2-sha256$…</code>) use common encoded formats, while scrypt uses this tool's self-describing <code>$scrypt$ln=…,r=…,p=…$salt$hash</code> format. Educational algorithms (Balloon-style, aehash, Blake2b-KDF) use this tool's own formats and are for learning only. This page makes no API requests; all cryptography runs locally, and the pinned CDN libraries contain the hashing implementations.</p>
+        </details>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/argon2-browser@1.18.0/dist/argon2-bundled.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scrypt-js@3.0.1/scrypt.js" crossorigin="anonymous"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
